@@ -1,0 +1,95 @@
+.game {
+    width: 35%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.title {
+    margin-right: 35%;
+    margin-left: 35%;
+    padding: 10px;
+    font-size: 25px;
+    color: white;
+    background-color: #4CAF50;
+}
+
+.rules {
+    margin: 20px 35%;
+    background-color: #E3DCB5;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.history {
+    margin: 20px 35%;
+    background-color: #E3DCB5;
+    padding: 10px;
+    border-radius: 15px;
+    display: none;
+}
+
+.wrapper {
+    background-color: #ECE5CE;
+    text-align: center;
+    font-family: "Arial", sans-serif;
+    padding-bottom: 20%;
+    margin: 0;
+    position: relative;
+}
+
+.gameBoard img{
+    display: inline-block;
+    padding: 3px;
+}
+
+.gameBoard {
+    background-color: #E3DCB5;
+    text-align: center;
+    padding: 10px;
+    width: 500px;
+    margin: auto;
+    border-radius: 15px;
+    position: relative;
+}
+
+body {
+    margin: 0;
+}
+
+.gameBoard button {
+    background-color: #4CAF50;
+    margin-bottom: 0;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+select {
+    padding: 5px 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.newGame {
+    width: 200px;
+    font-size: 20px;
+    text-align: center;
+    transition-duration: 0.5s;
+    background-color: #4CAF50;
+    border-radius: 10px;
+    border-color: #4CAF50;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    position: relative;
+}
+
+.newGame:hover {
+    background-color: white;
+    color: black;
+}

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Play MasterMind!</title>
+    <link rel="stylesheet" href="mastermind.css">
+    <link rel="icon" href="images/color1.png"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="title">
+        <h1>Play Mastermind!</h1>
+    </div>
+    <div class="rules">
+        <h4>Game Rules:</h4>
+        <p>The goal of Mastermind is to guess the code. In order to do so, you get 8 tries.
+            Press on one of the colored pegs at the bottom of the board in order to select it.
+            Place your selected peg into one of the holders and press "Next Row". You will get a white,
+            a red, or no peg at all depending on what you guessed.<br><br>
+            <img src="images/colorHolder.png" alt="A holder for the pegs" height="32" width="32" style="float: left"/>
+            No peg indicates that one of the pegs you put in is incorrect and does not appear in the
+            code at all. <br><br>
+            <img src="images/redpeg.png" alt="A red peg" height="32" width="32" style="float: left"/>
+            A red peg indicates that one of the colors that you put in is correct, but just not in
+            the right spot.<br><br>
+            <img src="images/whitepeg.png" alt="A white peg" height="32" width="32" style="float: left"/>
+            A white peg indicates that one of the colors you put in is correct and in the
+            right spot. <br><br>
+        </p>
+    </div>
+        <div class="gameBoard" id="gameBoard">
+            <div id="code"></div>
+        </div>
+    <div class="userInputs" id="userInputs">
+        <label for="codeLength">Code Length:</label>
+        <select id="codeLength" name="type">
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="6">6</option>
+            <option value="2">2</option>
+        </select>
+    </div>
+    <button class="newGame" onclick="resetBoard()">New Game</button>
+    <div class="history" id="history"></div>
+    </div>
+
+</body>
+<script>
+    "use strict";
+    const boardId = document.getElementById("gameBoard");
+    let cursorValue = 0;
+    function selectColor(value) {       // This function gives the cursor a value depending on which color the user clicks on, and als changes the cursor to that color.
+        document.getElementById("gameBoard").style.cursor = `url(images/cursor${value.toString()}.png), auto`;
+        cursorValue = parseInt(value);
+    }
+
+    let curRow = 1;
+    let fullRow = 0;
+    function nextRow() {
+        if (fullRow >= codeLength) {
+            let checkWin = checkAnswers();
+            curRow += 1;
+            let lastRow = curRow - 1;
+            if (checkWin === true) {                        // This just checks if the user won or not and then executes the functions accordingly
+                onWin();
+                updateHistory("Win", lastRow)
+                document.getElementById("0" + lastRow.toString()).remove();
+            }
+            else if (checkWin === false && curRow === 9) {  //This checks if the user lost or not and executes the functions accordingly
+                onLoss();
+                updateHistory("Loss", lastRow);
+                document.getElementById("0" + lastRow.toString()).remove();
+            }
+            else if (checkWin === false) {                  // If the user neither won nor lost, it will just delete the last
+                if (curRow === 9) {                         // "next row" button and create a new one in the new row
+                    document.getElementById("0" + lastRow.toString()).remove();
+                }
+                document.getElementById("0" + curRow.toString()).innerHTML += "<button class='button' onclick='nextRow()'>Next Row</button>";
+                document.getElementById("0" + lastRow.toString()).remove();
+                changeRowBackground();
+                fullRow = 0;
+            }
+        }
+        else {
+            alert("Please Finish The Current Row!")
+        }
+    }
+
+    function changeRowBackground() {
+        let lastRow = curRow - 1;
+        document.getElementById(curRow.toString()).style.backgroundColor = `#979279`
+        document.getElementById(curRow.toString()).style.borderRadius = `10px`
+        document.getElementById(lastRow.toString()).style.backgroundColor = ``
+        document.getElementById(lastRow.toString()).style.borderRadius = ``
+        if (curRow === 9) {
+            document.getElementById("8").style.backgroundColor = ``
+            document.getElementById("8").style.borderRadius = ``
+        }
+    }
+
+    function checkAnswers() {
+        let hintPegCounter = 0;                           // This counter is used to make sure that the white pegs come before the red ones
+        let codeCopy = fullCode.slice(0);                 // It makes a copy of the code in order to change the pegs that it already checked later on
+        for (let counter = 0; counter < codeLength; counter ++) {
+            let divId = document.getElementById("answer" + curRow.toString() + hintPegCounter.toString())       // Updates the location of where a potential peg should go
+            if (userGuess[counter] === codeCopy[counter]) {                                                     // This compares the guess and the code to see if
+                divId.innerHTML = '<img src="images/whitepeg.png" height="16" width="16" alt="A white Peg"/>';  // any of the values are equal, and if so it will display a white peg.
+                hintPegCounter += 1;
+                codeCopy[counter] = "white";   // This makes sure that the color that just got checked and found out to be correct doesn't get checked twice
+            }
+            if (hintPegCounter === codeCopy.length) {
+                return true;             // If there have been as many white pegs as the length of the code, the function will return true which means that the user won
+            }
+        }
+        for (let counter = -1; counter < codeLength; counter ++) {
+            let divId = document.getElementById("answer" + curRow.toString() + hintPegCounter.toString())       // This just updates the location of the next potential peg
+            if (codeCopy.indexOf(userGuess[counter]) !== -1 && codeCopy.indexOf(userGuess[counter]) !== fullCode[counter]) {    // If it notices that the given number appears
+                divId.innerHTML = '<img src="images/redpeg.png" height="16" width="16" alt="A red Peg"/>';                      // somewhere else in the hidden code, other than
+                codeCopy[codeCopy.indexOf(userGuess[counter])] = "red";                                                         // where it appears in the guess, it will add a red peg
+                hintPegCounter += 1;                                                                                            // and change that value, so that it doesn't count that value twice
+            }
+        }
+        userGuess = [];
+        return false;
+    }
+
+    function onWin() {                              // This just tells the user they won, sets the current row to 9
+        curRow = 9;                                 // so the user can't change anything on the board anymore and reveals the code
+        alert("Congratulations! You Won!");
+        document.getElementById("gameBoard").style.cursor = "auto"
+        revealCode();
+    }
+
+    function revealCode() {
+        document.getElementById("code").innerHTML = "";             // This replaces the mystery boxes with the actual code so the user can see what it was
+        for (let counter = 0; counter < codeLength; counter += 1) {
+            document.getElementById("code").innerHTML += "<img src='images/color" + fullCode[counter] + ".png' height='32' width='32' alt='code'/>";
+        }
+    }
+
+    function onLoss () {
+        alert("You Lost! Better Luck Next Time");   // This tells the user they lost, sets the current row to 9
+        curRow = 9;                                 // so the user can't change anything on the board anymore and reveals the code
+        document.getElementById("gameBoard").style.cursor = "auto"
+        revealCode();
+    }
+
+    function updateHistory(winLoss, numRows) {
+        document.getElementById("history").style.display = "block"
+        document.getElementById("history").innerHTML += `<h4 style="display: inline">Game ${curGame}: </h4> <p style="display: inline">${winLoss} in ${numRows} Row(s)</p> <br/> <br/>`;
+    }
+
+    let userGuess = [];
+    function putColor(place) {
+        let rowTry = place.toString().charAt(0);                    // This places the colors into the holders and
+        let placement = place.toString().charAt(1);                 // has a counter in it that makes
+        const placeId = document.getElementById(place);             // sure that the row is filled in order to check if
+        if(cursorValue !== 0 && curRow.toString() === rowTry) {     // the user can go on to the next row.
+            placeId.innerHTML = `<img src='images/color${cursorValue}.png' height="32" width="32" onclick='putColor(${place})' alt='peg'>`;
+            if (placeId.classList.contains("notAColor") === true) {
+                fullRow += 1;
+                placeId.classList.remove("notAColor");
+            }                                                       // This records which colors the user placed in the holders and
+            userGuess[parseInt(placement)] = cursorValue.toString();// stores them in an array that will be used in another function
+        }                                                           // to determine how accurate the guess was
+    }
+
+    let fullCode = [];
+    function createCode () {
+        fullCode = [];                                              // This automatically makes a random code,
+        boardId.innerHTML = "<div class='code' id='code'></div>";   // and assigns the value to the variable fullCode
+        for (let counter = 0; counter < codeLength; counter ++) {   // It also generates the mystery images that represent the code
+            fullCode[counter] = Math.floor(Math.random() * 6) + 1;
+            fullCode[counter] = fullCode[counter].toString();
+            document.getElementById("code").innerHTML += "<img src='images/Mystery.png' alt='Mystery' height='32' width='32'/>";
+        }
+        return fullCode;
+    }
+
+    function getCodeLength() {                  // This gets the length of the code from the user's input
+        let codeLength = document.getElementById("codeLength");
+        let lengthOfCode = codeLength.options[codeLength.selectedIndex].text;
+        codeLength = lengthOfCode.toString();
+        return codeLength;
+    }
+
+    let curGame = 0;
+    let codeLength;
+    function resetBoard() {
+        let divId;
+        let checkButton;
+        codeLength = getCodeLength();       // This resets all the values that are used in multiple functions and generates a new code
+        curRow = 1;
+        fullRow = 0;
+        cursorValue = 0;
+        curGame += 1;
+        fullCode = createCode();
+        document.getElementById("gameBoard").style.cursor = "auto"
+        for (let rowCounter = 8; rowCounter > 0; rowCounter -= 1) {
+            boardId.innerHTML += `<div id='${rowCounter}'/></div>`;
+            for (let codeLengthCounter = 0; codeLengthCounter < codeLength; codeLengthCounter ++) {       // This creates the holders that will be used to place the colors in
+                divId = rowCounter.toString() + codeLengthCounter.toString()
+                document.getElementById(rowCounter.toString()).innerHTML += `<div class="notAColor" id='${divId}' style="display: inline-block"><img src="images/colorHolder.png" height="32" width="32" alt="A holder for a peg" onclick="putColor(${divId})"/></div>`
+            }
+            for (let codeLengthCounter = 0; codeLengthCounter < codeLength; codeLengthCounter ++) {       // This creates the holders that will be used to display the accuracy of the user's guess
+                divId = "answer" + rowCounter.toString() + codeLengthCounter.toString();
+                document.getElementById(rowCounter.toString()).innerHTML += `<div class="answers" id='${divId}' style="display: inline-block"><img src="images/colorHolder.png" height="16" width="16"/></div>`;
+            }
+            checkButton = "0" + rowCounter.toString();
+            boardId.innerHTML += `<div id='${checkButton}'></div>`;             // This creates the divs that will be used to place the "Next Row" buttons in
+            boardId.innerHTML += '<br/>';
+        }
+        for (let colorCounter = 1; colorCounter < 7; colorCounter ++) {         // This creates the colors that will be used to change your cursor and put the colors into the holders on the board
+            boardId.innerHTML += `<img src='images/color${colorCounter}.png' onclick='selectColor(${colorCounter})' height="32" width="32" class="colorSelection"/>`;
+        }
+        document.getElementById("01").innerHTML += `<button class="button" onclick='nextRow()'>Next Row</button>`;
+        boardId.innerHTML += '<div id="colorDisplay"></div>';                   // This creates the first "Next Row" button
+        document.getElementById("1").style.backgroundColor = "#979279";
+        document.getElementById("1").style.borderRadius = "10px"
+    }
+    resetBoard();
+</script>
+</html>
