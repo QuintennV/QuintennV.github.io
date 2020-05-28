@@ -108,7 +108,6 @@
                 hintPegCounter += 1;
                 codeCopy[codeCopy.indexOf(userGuess[counter])] = "white";   // This makes sure that the color that just got checked and found out to be correct doesn't get checked twice
                 userGuess[counter] = "checked"
-                console.log(codeCopy)
             }
             if (hintPegCounter === codeCopy.length) {
                 return true;             // If there have been as many white pegs as the length of the code, the function will return true which means that the user won
@@ -119,7 +118,6 @@
             if (codeCopy.indexOf(userGuess[counter]) !== -1 && codeCopy.indexOf(userGuess[counter]) !== fullCode[counter]) {    // If it notices that the given number appears
                 divId.innerHTML = '<img src="images/redpeg.png" height="16" width="16" alt="A red Peg"/>';                      // somewhere else in the hidden code, other than
                 codeCopy[codeCopy.indexOf(userGuess[counter])] = "red";                                                         // where it appears in the guess, it will add a red peg
-                console.log(codeCopy)
                 userGuess[counter] = "checked"
                 hintPegCounter += 1;                                                                                            // and change that value, so that it doesn't count that value twice
             }
@@ -177,8 +175,8 @@
             fullCode[counter] = Math.floor(Math.random() * 6) + 1;
             fullCode[counter] = fullCode[counter].toString();
             document.getElementById("code").innerHTML += "<img src='images/Mystery.png' alt='Mystery' height='32' width='32'/>";
-            console.log("fullcode: " + fullCode)
         }
+        console.log("fullcode: " + fullCode);
         return fullCode;
     }
 
