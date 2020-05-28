@@ -101,22 +101,26 @@
     function checkAnswers() {
         let hintPegCounter = 0;                           // This counter is used to make sure that the white pegs come before the red ones
         let codeCopy = fullCode.slice(0);                 // It makes a copy of the code in order to change the pegs that it already checked later on
-        for (let counter = 0; counter < codeLength; counter ++) {
+        for (let counter = 0; counter < codeLength; counter +=1) {
             let divId = document.getElementById("answer" + curRow.toString() + hintPegCounter.toString())       // Updates the location of where a potential peg should go
             if (userGuess[counter] === codeCopy[counter]) {                                                     // This compares the guess and the code to see if
                 divId.innerHTML = '<img src="images/whitepeg.png" height="16" width="16" alt="A white Peg"/>';  // any of the values are equal, and if so it will display a white peg.
                 hintPegCounter += 1;
-                codeCopy[counter] = "white";   // This makes sure that the color that just got checked and found out to be correct doesn't get checked twice
+                codeCopy[codeCopy.indexOf(userGuess[counter])] = "white";   // This makes sure that the color that just got checked and found out to be correct doesn't get checked twice
+                userGuess[counter] = "checked"
+                console.log(codeCopy)
             }
             if (hintPegCounter === codeCopy.length) {
                 return true;             // If there have been as many white pegs as the length of the code, the function will return true which means that the user won
             }
         }
-        for (let counter = -1; counter < codeLength; counter ++) {
+        for (let counter = -1; counter < codeLength; counter +=1) {
             let divId = document.getElementById("answer" + curRow.toString() + hintPegCounter.toString())       // This just updates the location of the next potential peg
             if (codeCopy.indexOf(userGuess[counter]) !== -1 && codeCopy.indexOf(userGuess[counter]) !== fullCode[counter]) {    // If it notices that the given number appears
                 divId.innerHTML = '<img src="images/redpeg.png" height="16" width="16" alt="A red Peg"/>';                      // somewhere else in the hidden code, other than
                 codeCopy[codeCopy.indexOf(userGuess[counter])] = "red";                                                         // where it appears in the guess, it will add a red peg
+                console.log(codeCopy)
+                userGuess[counter] = "checked"
                 hintPegCounter += 1;                                                                                            // and change that value, so that it doesn't count that value twice
             }
         }
@@ -173,6 +177,7 @@
             fullCode[counter] = Math.floor(Math.random() * 6) + 1;
             fullCode[counter] = fullCode[counter].toString();
             document.getElementById("code").innerHTML += "<img src='images/Mystery.png' alt='Mystery' height='32' width='32'/>";
+            console.log("fullcode: " + fullCode)
         }
         return fullCode;
     }
